@@ -55,7 +55,7 @@ class Inventory
         return maxId;
     }
 
-    public static void AddProduct(Product newProduct)
+    public void AddProduct(Product newProduct)
     {
         // Add file to class' products
         _products.Add(newProduct);
@@ -92,6 +92,14 @@ class Program
         // Check that products is being initialized correctly
         Inventory inv = new Inventory();
         for(int i = 0; i < inv.products.Count(); i++)
+        {
+            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
+        }
+
+        Inventory.Product newProduct = new Inventory.Product(Inventory.GenerateId(), "dummy_product", 100, 100);
+        inv.AddProduct(newProduct);
+
+        for (int i = 0; i < inv.products.Count(); i++)
         {
             Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
         }

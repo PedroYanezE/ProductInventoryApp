@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 class Inventory
 {
@@ -29,8 +30,18 @@ class Inventory
             _quantity = quantity;
         }
     }
+    private static void ReadInventoryFile()
+    {
+        foreach (string line in File.ReadLines(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
+        {
+            string[] splittedLine = line.Split(' ');
 
-    protected static int GenerateId()
+            Product currentProduct = new Product(Int32.Parse(splittedLine[0]), splittedLine[1], Int32.Parse(splittedLine[2]), Int32.Parse(splittedLine[3]));
+            _products.Add(currentProduct);
+        }
+    }
+
+    public static int GenerateId()
     {
         int maxId = 0;
         for (int i = 0; i < _products.Count; i++)
@@ -44,20 +55,35 @@ class Inventory
         return maxId;
     }
 
-    public static void ReadInventoryFile()
+    public static void AddProduct(Product newProduct)
     {
-        Console.WriteLine("READING INVENTORY");
-        foreach (string line in File.ReadLines(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
-        {
-            string[] splittedLine = line.Split(' ');
+        // Add file to class' products
+        _products.Add(newProduct);
 
-            Product currentProduct = new Product(Int32.Parse(splittedLine[0]), splittedLine[1], Int32.Parse(splittedLine[2]), Int32.Parse(splittedLine[3]));
-            _products.Add(currentProduct);
+        // Add product to inventory file
+        if (!File.Exists(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
+        {
+            using (StreamWriter sw = File.CreateText(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
+            {
+                    string newLine = String.Format(
+                        "{0} {1} {2} {3}",
+                        newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
+                    );
+                    sw.WriteLine(newLine);
+            }
+        } else
+        {
+            using (StreamWriter sw = File.AppendText(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
+            {
+                string newLine = String.Format(
+                    "{0} {1} {2} {3}",
+                    newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
+                );
+                sw.WriteLine(newLine);
+            }
         }
-        Console.WriteLine("FINISHED READING INVENTORY");
     }
 }
-
 
 class Program
 {

@@ -52,7 +52,7 @@ class Inventory
             }
         }
 
-        return maxId;
+        return maxId + 1;
     }
 
     public void AddProduct(Product newProduct)

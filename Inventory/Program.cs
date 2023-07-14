@@ -32,12 +32,15 @@ class Inventory
     }
     private static void ReadInventoryFile()
     {
-        foreach (string line in File.ReadLines(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
+        if(File.Exists(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
         {
-            string[] splittedLine = line.Split(' ');
+            foreach (string line in File.ReadLines(@"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt"))
+            {
+                string[] splittedLine = line.Split(' ');
 
-            Product currentProduct = new Product(Int32.Parse(splittedLine[0]), splittedLine[1], Int32.Parse(splittedLine[2]), Int32.Parse(splittedLine[3]));
-            _products.Add(currentProduct);
+                Product currentProduct = new Product(Int32.Parse(splittedLine[0]), splittedLine[1], Int32.Parse(splittedLine[2]), Int32.Parse(splittedLine[3]));
+                _products.Add(currentProduct);
+            }
         }
     }
 

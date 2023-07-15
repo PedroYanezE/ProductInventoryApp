@@ -109,16 +109,16 @@ class Inventory
         }
     }
 
-    public string? GetProduct(int searchField, string searchValue)
+    public string? GetProduct(InventoryField searchField, string searchValue)
     {
-        if (searchField == (int)InventoryField.ID)
+        if (searchField == InventoryField.ID)
         {
             Product? foundProduct = _products.Find(prod => prod._id.ToString() == searchValue);
             if (foundProduct != null)
             {
                 return foundProduct.ToString();
             }
-        } else if(searchField == (int)InventoryField.NAME)
+        } else if(searchField == InventoryField.NAME)
         {
             Product? foundProduct = _products.Find(prod => prod._name == searchValue);
             if (foundProduct != null)
@@ -130,7 +130,7 @@ class Inventory
         return null;
     }
 
-    public void UpdateProductStock(string path, int searchField, string searchValue, int fieldToUpdate, string updatedField)
+    public void UpdateProductStock(string path, InventoryField searchField, string searchValue, InventoryField fieldToUpdate, string updatedField)
     {
         // Create a new file that will contain the updated product, then replace the original file
         // with the new one.
@@ -143,16 +143,16 @@ class Inventory
                 string[] splittedLine = line.Split(' ');
                 string newLine = line;
 
-                if (splittedLine[searchField] == searchValue)
+                if (splittedLine[(int) searchField] == searchValue)
                 {
-                    if (fieldToUpdate == (int)InventoryField.PRICE)
+                    if (fieldToUpdate == InventoryField.PRICE)
                     {
                         newLine = String.Format(
                             "{0} {1} {2} {3}",
                             splittedLine[0], splittedLine[1], updatedField, splittedLine[3]
                         );
                     }
-                    else if (fieldToUpdate == (int)InventoryField.QUANTITY)
+                    else if (fieldToUpdate == InventoryField.QUANTITY)
                     {
                         newLine = String.Format(
                             "{0} {1} {2} {3}",
@@ -173,17 +173,17 @@ class Inventory
         if(searchField == (int)InventoryField.ID)
         {
             productToUpdate = _products.Find(prod => prod._id == Int32.Parse(searchValue));
-        } else if(searchField == (int)InventoryField.NAME)
+        } else if(searchField == InventoryField.NAME)
         {
             productToUpdate = _products.Find(prod => prod._name == searchValue);
         }
         
         if(productToUpdate!= null )
         {
-            if(fieldToUpdate == (int)InventoryField.PRICE)
+            if(fieldToUpdate == InventoryField.PRICE)
             {
                 productToUpdate._price = Int32.Parse(updatedField);
-            } else if(fieldToUpdate == (int)InventoryField.QUANTITY)
+            } else if(fieldToUpdate == InventoryField.QUANTITY)
             {
                 productToUpdate._quantity = Int32.Parse(updatedField);
             }
@@ -226,7 +226,7 @@ class Program
         }
 
         Console.WriteLine("\nSearching for the added product by ID...");
-        string? foundProductString = inv.GetProduct((int)InventoryField.ID, newProductId.ToString());
+        string? foundProductString = inv.GetProduct(InventoryField.ID, newProductId.ToString());
         if(foundProductString!= null)
         {
             Console.WriteLine("\n" + foundProductString);
@@ -236,7 +236,7 @@ class Program
         }
 
         Console.WriteLine("\nSearching for the added product by NAME...");
-        foundProductString = inv.GetProduct((int)InventoryField.NAME, "zapatillas_adidas");
+        foundProductString = inv.GetProduct(InventoryField.NAME, "zapatillas_adidas");
         if (foundProductString != null)
         {
             Console.WriteLine("\n" + foundProductString);
@@ -247,7 +247,7 @@ class Program
         }
 
         Console.WriteLine("\nUpdating new product stock by name...");
-        inv.UpdateProductStock(path, (int)InventoryField.NAME, "zapatillas_adidas", (int)InventoryField.QUANTITY, "50");
+        inv.UpdateProductStock(path, InventoryField.NAME, "zapatillas_adidas", InventoryField.QUANTITY, "50");
         Console.WriteLine("\nProducts now:");
         for (int i = 0; i < inv.products.Count; i++)
         {
@@ -255,7 +255,7 @@ class Program
         }
 
         Console.WriteLine("\nUpdating new product stock by id...");
-        inv.UpdateProductStock(path, (int)InventoryField.ID, newProductId.ToString(), (int)InventoryField.QUANTITY, "30");
+        inv.UpdateProductStock(path, InventoryField.ID, newProductId.ToString(), InventoryField.QUANTITY, "30");
 
         Console.WriteLine("\nProducts now:");
         for (int i = 0; i < inv.products.Count; i++)
@@ -264,7 +264,7 @@ class Program
         }
 
         Console.WriteLine("\nUpdating new product price by name...");
-        inv.UpdateProductStock(path, (int)InventoryField.NAME, "zapatillas_adidas", (int)InventoryField.PRICE, "60000");
+        inv.UpdateProductStock(path, InventoryField.NAME, "zapatillas_adidas", InventoryField.PRICE, "60000");
 
         Console.WriteLine("\nProducts now:");
         for (int i = 0; i < inv.products.Count; i++)
@@ -273,7 +273,7 @@ class Program
         }
 
         Console.WriteLine("\nUpdating new product price by ID...");
-        inv.UpdateProductStock(path, (int)InventoryField.ID, newProductId.ToString(), (int)InventoryField.PRICE, "30000");
+        inv.UpdateProductStock(path, InventoryField.ID, newProductId.ToString(), InventoryField.PRICE, "30000");
 
         Console.WriteLine("\nProducts now:");
         for (int i = 0; i < inv.products.Count; i++)

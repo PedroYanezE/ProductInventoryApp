@@ -71,6 +71,12 @@ class Inventory
 
     public void AddProduct(Product newProduct, string path)
     {
+        // Check if product already exists
+        if(_products.Find(prod => prod._name == newProduct._name) != null)
+        {
+            return;
+        }
+
         // Add file to class' products
         _products.Add(newProduct);
 
@@ -157,7 +163,6 @@ class Inventory
             }
         }
     }
-
 }
 
 class Program
@@ -166,7 +171,7 @@ class Program
     {
         string path = @"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt";
 
-        // Check that products is being initialized correctly
+        // "Testing"
         Console.WriteLine("Starting products:");
         Inventory inv = new(path);
         for(int i = 0; i < inv.products.Count; i++)
@@ -177,6 +182,15 @@ class Program
         Console.WriteLine("\nAdding new product...");
         int newProductId = Inventory.GenerateId();
         Product newProduct = new(newProductId, "zapatillas_adidas", 90000, 100);
+        inv.AddProduct(newProduct, path);
+
+        Console.WriteLine("\nProducts now:");
+        for (int i = 0; i < inv.products.Count; i++)
+        {
+            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
+        }
+
+        Console.WriteLine("\nTrying to add the same product again...");
         inv.AddProduct(newProduct, path);
 
         Console.WriteLine("\nProducts now:");

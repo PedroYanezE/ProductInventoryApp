@@ -16,6 +16,11 @@ class Product
     public int _price;
     public int _quantity;
 
+    public override string ToString()
+    {
+        return String.Format("{0} {1} {2} {3}", _id, _name, _price, _quantity);
+    }
+
     public Product(int id, string? name, int price, int quantity)
     {
         _id = id;
@@ -102,6 +107,27 @@ class Inventory
                 sw.WriteLine(newLine);
             }
         }
+    }
+
+    public string? GetProduct(int searchField, string searchValue)
+    {
+        if (searchField == (int)InventoryField.ID)
+        {
+            Product? foundProduct = _products.Find(prod => prod._id.ToString() == searchValue);
+            if (foundProduct != null)
+            {
+                return foundProduct.ToString();
+            }
+        } else if(searchField == (int)InventoryField.NAME)
+        {
+            Product? foundProduct = _products.Find(prod => prod._name == searchValue);
+            if (foundProduct != null)
+            {
+                return foundProduct.ToString();
+            }
+        }
+
+        return null;
     }
 
     public void UpdateProductStock(string path, int searchField, string searchValue, int fieldToUpdate, string updatedField)
@@ -197,6 +223,27 @@ class Program
         for (int i = 0; i < inv.products.Count; i++)
         {
             Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
+        }
+
+        Console.WriteLine("\nSearching for the added product by ID...");
+        string? foundProductString = inv.GetProduct((int)InventoryField.ID, newProductId.ToString());
+        if(foundProductString!= null)
+        {
+            Console.WriteLine("\n" + foundProductString);
+        } else
+        {
+            Console.WriteLine("\nCould not find product");
+        }
+
+        Console.WriteLine("\nSearching for the added product by NAME...");
+        foundProductString = inv.GetProduct((int)InventoryField.NAME, "zapatillas_adidas");
+        if (foundProductString != null)
+        {
+            Console.WriteLine("\n" + foundProductString);
+        }
+        else
+        {
+            Console.WriteLine("\nCould not find product");
         }
 
         Console.WriteLine("\nUpdating new product stock by name...");

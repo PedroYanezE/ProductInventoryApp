@@ -32,32 +32,29 @@ class Product
 
 class Inventory
 {
-    private static List<Product> _products = new();
-    private static string? _path;
-    public List<Product> products
+    private static readonly string _path = @"C:\Users\pedro\source\repos\PedroYanezE\ProductInventoryApp\inventory.txt";
+    private static readonly List<Product> _products = ReadInventoryFile();
+    public static List<Product> Products
     {
         get { return _products; }
     }
 
-    public Inventory(string path)
+    private static List<Product> ReadInventoryFile()
     {
-        // Populate products list
-        _path = path;
-        ReadInventoryFile();
-    }
+        List<Product> products = new();
 
-    private static void ReadInventoryFile()
-    {
         if(File.Exists(_path))
         {
             foreach (string line in File.ReadLines(_path))
             {
                 string[] splittedLine = line.Split(' ');
 
-                Product currentProduct = new Product(Int32.Parse(splittedLine[0]), splittedLine[1], Int32.Parse(splittedLine[2]), Int32.Parse(splittedLine[3]));
-                _products.Add(currentProduct);
+                Product currentProduct = new(Int32.Parse(splittedLine[0]), splittedLine[1], Int32.Parse(splittedLine[2]), Int32.Parse(splittedLine[3]));
+                products.Add(currentProduct);
             }
         }
+
+        return products;
     }
 
     public static int GenerateId()
@@ -74,7 +71,7 @@ class Inventory
         return maxId + 1;
     }
 
-    public void AddProduct(Product newProduct, string path)
+    public static void AddProduct(Product newProduct, string path)
     {
         // Check if product already exists
         if(_products.Find(prod => prod._name == newProduct._name) != null)
@@ -88,28 +85,24 @@ class Inventory
         // Add product to inventory file
         if (!File.Exists(path))
         {
-            using (StreamWriter sw = File.CreateText(path))
-            {
-                    string newLine = String.Format(
-                        "{0} {1} {2} {3}",
-                        newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
-                    );
-                    sw.WriteLine(newLine);
-            }
+            using StreamWriter sw = File.CreateText(path);
+            string newLine = String.Format(
+                "{0} {1} {2} {3}",
+                newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
+            );
+            sw.WriteLine(newLine);
         } else
         {
-            using (StreamWriter sw = File.AppendText(path))
-            {
-                string newLine = String.Format(
-                    "{0} {1} {2} {3}",
-                    newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
-                );
-                sw.WriteLine(newLine);
-            }
+            using StreamWriter sw = File.AppendText(path);
+            string newLine = String.Format(
+                "{0} {1} {2} {3}",
+                newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
+            );
+            sw.WriteLine(newLine);
         }
     }
 
-    public string? GetProduct(InventoryField searchField, string searchValue)
+    public static string? GetProduct(InventoryField searchField, string searchValue)
     {
         if (searchField == InventoryField.ID)
         {
@@ -130,7 +123,7 @@ class Inventory
         return null;
     }
 
-    public void UpdateProductStock(string path, InventoryField searchField, string searchValue, InventoryField fieldToUpdate, string updatedField)
+    public static void UpdateProductStock(string path, InventoryField searchField, string searchValue, InventoryField fieldToUpdate, string updatedField)
     {
         // Create a new file that will contain the updated product, then replace the original file
         // with the new one.
@@ -193,92 +186,74 @@ class Inventory
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        string path = @"C:\Users\pedro\source\repos\Inventory\Inventory\inventory.txt";
+        bool keepRunning = true;
 
-        // "Testing"
-        Console.WriteLine("Starting products:");
-        Inventory inv = new(path);
-        for(int i = 0; i < inv.products.Count; i++)
+        while (keepRunning)
         {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
+            Console.Write(@"Welcome to inventory system.
+    1. Search for a product
+    2. Add a product
+    3. Update a product
+    4. Exit
+
+Your option: ");
+
+            string? option = Console.ReadLine();
+
+            Console.WriteLine("");
+
+            switch (option)
+            {
+                case "1":
+                    SearchProduct();
+                    break;
+                case "4":
+                    keepRunning = false;
+                    break;
+                default:
+                    Console.WriteLine("Please enter a valid option.");
+                    break;
+            }
         }
+    }
 
-        Console.WriteLine("\nAdding new product...");
-        int newProductId = Inventory.GenerateId();
-        Product newProduct = new(newProductId, "zapatillas_adidas", 90000, 100);
-        inv.AddProduct(newProduct, path);
+    static void SearchProduct()
+    {
+        Console.Write(@"Search By
+    1. ID
+    2. Name
 
-        Console.WriteLine("\nProducts now:");
-        for (int i = 0; i < inv.products.Count; i++)
+Your option: ");
+
+        bool keepAsking = true;
+
+        while(keepAsking)
         {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
-        }
+            string? searchBy = Console.ReadLine();
+            Console.WriteLine("");
 
-        Console.WriteLine("\nTrying to add the same product again...");
-        inv.AddProduct(newProduct, path);
+            string? searchValue;
 
-        Console.WriteLine("\nProducts now:");
-        for (int i = 0; i < inv.products.Count; i++)
-        {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
-        }
-
-        Console.WriteLine("\nSearching for the added product by ID...");
-        string? foundProductString = inv.GetProduct(InventoryField.ID, newProductId.ToString());
-        if(foundProductString!= null)
-        {
-            Console.WriteLine("\n" + foundProductString);
-        } else
-        {
-            Console.WriteLine("\nCould not find product");
-        }
-
-        Console.WriteLine("\nSearching for the added product by NAME...");
-        foundProductString = inv.GetProduct(InventoryField.NAME, "zapatillas_adidas");
-        if (foundProductString != null)
-        {
-            Console.WriteLine("\n" + foundProductString);
-        }
-        else
-        {
-            Console.WriteLine("\nCould not find product");
-        }
-
-        Console.WriteLine("\nUpdating new product stock by name...");
-        inv.UpdateProductStock(path, InventoryField.NAME, "zapatillas_adidas", InventoryField.QUANTITY, "50");
-        Console.WriteLine("\nProducts now:");
-        for (int i = 0; i < inv.products.Count; i++)
-        {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
-        }
-
-        Console.WriteLine("\nUpdating new product stock by id...");
-        inv.UpdateProductStock(path, InventoryField.ID, newProductId.ToString(), InventoryField.QUANTITY, "30");
-
-        Console.WriteLine("\nProducts now:");
-        for (int i = 0; i < inv.products.Count; i++)
-        {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
-        }
-
-        Console.WriteLine("\nUpdating new product price by name...");
-        inv.UpdateProductStock(path, InventoryField.NAME, "zapatillas_adidas", InventoryField.PRICE, "60000");
-
-        Console.WriteLine("\nProducts now:");
-        for (int i = 0; i < inv.products.Count; i++)
-        {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
-        }
-
-        Console.WriteLine("\nUpdating new product price by ID...");
-        inv.UpdateProductStock(path, InventoryField.ID, newProductId.ToString(), InventoryField.PRICE, "30000");
-
-        Console.WriteLine("\nProducts now:");
-        for (int i = 0; i < inv.products.Count; i++)
-        {
-            Console.WriteLine(inv.products[i]._id.ToString() + " " + inv.products[i]._name + " " + inv.products[i]._price + " " + inv.products[i]._quantity);
+            switch (searchBy)
+            {
+                case "1":
+                    Console.Write("Enter ID: ");
+                    searchValue = Console.ReadLine();
+                    Console.WriteLine("\nResult: " + Inventory.GetProduct(InventoryField.ID, searchValue) + "\n");
+                    keepAsking = false;
+                    break;
+                case "2":
+                    Console.Write("Enter name: ");
+                    searchValue = Console.ReadLine();
+                    Console.WriteLine("\nResult: " + Inventory.GetProduct(InventoryField.NAME, searchValue) + "\n");
+                    keepAsking = false;
+                    break;
+                default:
+                    Console.WriteLine("Please enter 1 to search by ID or 2 to search by name.");
+                    break;
+            }
         }
     }
 }

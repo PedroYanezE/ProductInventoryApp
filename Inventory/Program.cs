@@ -71,7 +71,7 @@ class Inventory
         return maxId + 1;
     }
 
-    public static void AddProduct(Product newProduct, string path)
+    public static void AddProduct(Product newProduct)
     {
         // Check if product already exists
         if(_products.Find(prod => prod._name == newProduct._name) != null)
@@ -83,9 +83,10 @@ class Inventory
         _products.Add(newProduct);
 
         // Add product to inventory file
-        if (!File.Exists(path))
+        if (!File.Exists(_path))
         {
-            using StreamWriter sw = File.CreateText(path);
+            Console.WriteLine("Product doesn't exist");
+            using StreamWriter sw = File.CreateText(_path);
             string newLine = String.Format(
                 "{0} {1} {2} {3}",
                 newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
@@ -93,7 +94,8 @@ class Inventory
             sw.WriteLine(newLine);
         } else
         {
-            using StreamWriter sw = File.AppendText(path);
+            Console.WriteLine("Product exists");
+            using StreamWriter sw = File.AppendText(_path);
             string newLine = String.Format(
                 "{0} {1} {2} {3}",
                 newProduct._id, newProduct._name, newProduct._price, newProduct._quantity
@@ -123,15 +125,15 @@ class Inventory
         return null;
     }
 
-    public static void UpdateProductStock(string path, InventoryField searchField, string searchValue, InventoryField fieldToUpdate, string updatedField)
+    public static void UpdateProductStock(InventoryField searchField, string searchValue, InventoryField fieldToUpdate, string updatedField)
     {
         // Create a new file that will contain the updated product, then replace the original file
         // with the new one.
         // This implementation should be suitable for large files, according to:
         // https://stackoverflow.com/a/1971052/12221075
-        using (StreamWriter sw = File.CreateText(path + "-temp"))
+        using (StreamWriter sw = File.CreateText(_path + "-temp"))
         {
-            foreach (string line in File.ReadLines(path))
+            foreach (string line in File.ReadLines(_path))
             {
                 string[] splittedLine = line.Split(' ');
                 string newLine = line;
@@ -158,8 +160,8 @@ class Inventory
             }
         }
 
-        File.Delete(path);
-        File.Move(path + "-temp", path);
+        File.Delete(_path);
+        File.Move(_path + "-temp", _path);
 
         // Update product in products list
         Product? productToUpdate = null;

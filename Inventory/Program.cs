@@ -32,7 +32,7 @@ class Product
 
 class Inventory
 {
-    private static readonly string _path = @"C:\Users\pedro\source\repos\PedroYanezE\ProductInventoryApp\inventory.txt";
+    private static readonly string _path = @"C:\Users\pedro\source\repos\PedroYanezE\ProductInventoryApp\Inventory\inventory.txt";
     private static readonly List<Product> _products = ReadInventoryFile();
     public static List<Product> Products
     {

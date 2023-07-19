@@ -211,6 +211,9 @@ Your option: ");
                 case "1":
                     SearchProduct();
                     break;
+                case "2":
+                    AddProduct();
+                    break;
                 case "4":
                     keepRunning = false;
                     break;
@@ -257,5 +260,50 @@ Your option: ");
                     break;
             }
         }
+    }
+
+    static void AddProduct()
+    {
+        Console.Write("Enter the product's name: ");
+        string? name = Console.ReadLine();
+
+        while (!StringIsValid(name))
+        {
+            Console.Write("Please, enter a valid name: ");
+            name = Console.ReadLine();
+        }
+
+        Console.Write("Enter the product's price: ");
+        string? priceInput = Console.ReadLine();
+        bool isPriceNumeric = int.TryParse(priceInput, out int priceValue);
+
+        while (!isPriceNumeric)
+        {
+            Console.Write("Please, enter a valid price value: ");
+            priceInput = Console.ReadLine();
+            isPriceNumeric = int.TryParse(priceInput, out priceValue);
+        }
+
+        Console.Write("Enter the product's current stock: ");
+        string? stockInput = Console.ReadLine();
+        bool isStockNumeric = int.TryParse(stockInput, out int stockValue);
+
+        while (!isStockNumeric)
+        {
+            Console.Write("Please, enter a valid stock value: ");
+            stockInput = Console.ReadLine();
+            isStockNumeric = int.TryParse(stockInput, out stockValue);
+        }
+
+        Product newProduct = new(Inventory.GenerateId(), name, priceValue, stockValue);
+        Inventory.AddProduct(newProduct);
+
+        Console.WriteLine("Created product:");
+        Console.WriteLine(newProduct.ToString());
+    }
+    
+    static bool StringIsValid(string? input)
+    {
+        return !String.IsNullOrWhiteSpace(input);
     }
 }

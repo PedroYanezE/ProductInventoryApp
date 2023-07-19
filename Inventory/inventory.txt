@@ -1,1 +1,4 @@
-1 zapatillas_nike 100000 100
+1 zapatillas_adidas 60000 50
+2 dummy 1000 10
+3 a 100 200
+4 p 123 321
